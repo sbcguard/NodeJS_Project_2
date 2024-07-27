@@ -16,18 +16,16 @@ export const signup = async (
   const { email, password, name } = req.body;
 
   let user = await prismaClient.user.findFirst({
-    where: { email: email },
+    where: { email },
   });
   if (user) {
-    return next(
-      new BadRequestsException(
-        'User already exists.',
-        ErrorCode.USER_ALREADY_EXIST
-      )
+    new BadRequestsException(
+      'User already exists.',
+      ErrorCode.USER_ALREADY_EXIST
     );
   }
   user = await prismaClient.user.create({
-    data: { email: email, name: name, password: hashSync(password, 10) },
+    data: { email, name, password: hashSync(password, 10) },
   });
   res.json(user);
 };
@@ -39,19 +37,15 @@ export const login = async (
   const { email, password } = req.body;
 
   let user = await prismaClient.user.findFirst({
-    where: { email: email },
+    where: { email },
   });
   if (!user) {
-    return next(
-      new NotFoundException('User not found.', ErrorCode.USER_NOT_FOUND)
-    );
+    throw new NotFoundException('User not found.', ErrorCode.USER_NOT_FOUND);
   }
   if (!compareSync(password, user.password)) {
-    return next(
-      new BadRequestsException(
-        'Incorrect password.',
-        ErrorCode.INCORRECT_PASSWORD
-      )
+    throw new BadRequestsException(
+      'Incorrect password.',
+      ErrorCode.INCORRECT_PASSWORD
     );
   }
   const token = jwt.sign(
