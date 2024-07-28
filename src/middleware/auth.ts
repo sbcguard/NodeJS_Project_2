@@ -4,14 +4,15 @@ import { ErrorCode } from '../exceptions/root';
 import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../secrets';
 import { prismaClient } from '..';
+import { User } from '@prisma/client';
 // Define a custom type extending the Request interface
 const authMiddleware = async (
-  req: Request,
+  req: Request & { user?: User },
   res: Response,
   next: NextFunction
 ) => {
   // 1. Get token from header
-  const token = req.headers.authorization || '';
+  const token = req.headers.authorization!;
   // 2. if no token, throw unauthorized error
   if (!token) {
     next(new UnauthorizedException('Unauthorized', ErrorCode.UNAUTHORIZED));
@@ -27,7 +28,7 @@ const authMiddleware = async (
       next(new UnauthorizedException('Unauthorized', ErrorCode.UNAUTHORIZED));
     }
     // 5. attach the user to the current request object
-    req.user = user as any;
+    req.user = user!;
     next(); // continue to the next middleware or route handler
   } catch (error) {
     next(new UnauthorizedException('Unauthorized', ErrorCode.UNAUTHORIZED));

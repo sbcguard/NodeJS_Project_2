@@ -7,6 +7,7 @@ import { BadRequestsException } from '../exceptions/bad-request';
 import { ErrorCode } from '../exceptions/root';
 import { SignupSchema } from '../schema/users';
 import { NotFoundException } from '../exceptions/notFound';
+import { User } from '@prisma/client';
 export const signup = async (
   req: Request,
   res: Response,
@@ -57,6 +58,6 @@ export const login = async (
 
   res.json({ user, token });
 };
-export const me = async (req: Request, res: Response) => {
+export const me = async (req: Request & { user?: User }, res: Response) => {
   res.json(req.user);
 };
