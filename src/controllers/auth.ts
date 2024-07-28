@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { prismaClient } from '..';
 import { hashSync, compareSync } from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../secrets';
+import { JWT_SECRET, JWT_SECRET_EXPIRATION } from '../secrets';
 import { BadRequestsException } from '../exceptions/bad-request';
 import { ErrorCode } from '../exceptions/root';
 import { SignupSchema } from '../schema/users';
@@ -25,8 +25,28 @@ export const signup = async (
       ErrorCode.USER_ALREADY_EXIST
     );
   }
+  let basicRole = await prismaClient.role.findUnique({
+    where: { name: 'BASIC' },
+  });
+  if (!basicRole) {
+    basicRole = await prismaClient.role.create({
+      data: {
+        name: 'BASIC',
+        description: 'Basic user role',
+      },
+    });
+  }
+  // Create the user and assign the BASIC role
   user = await prismaClient.user.create({
-    data: { email, name, password: hashSync(password, 10) },
+    data: {
+      email,
+      name,
+      password: hashSync(password, 10),
+      roles: {
+        connect: { id: basicRole.id }, // Connect the role by its ID
+      },
+    },
+    include: { roles: true }, // Include roles to verify assignment
   });
   res.json(user);
 };
@@ -53,11 +73,11 @@ export const login = async (
     {
       userId: user.id,
     },
-    JWT_SECRET
+    JWT_SECRET,
+    { expiresIn: JWT_SECRET_EXPIRATION }
   );
+  // Get the redirect URL from the request body
+  const redirectUrl = req.body.redirectUrl || '/';
 
-  res.json({ user, token });
-};
-export const me = async (req: Request & { user?: User }, res: Response) => {
-  res.json(req.user);
+  res.redirect(`${redirectUrl}?token=${token}`);
 };

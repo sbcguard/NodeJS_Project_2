@@ -1,20 +1,51 @@
-import express, { Express, Request, Response } from 'express';
-import { PORT } from './secrets';
+import express, { Express, Request, Response, NextFunction } from 'express';
+import { PORT, SECURE_ROOT } from './secrets';
 import rootRouter from './routes';
 import { PrismaClient } from '@prisma/client';
 import { errorMiddleware } from './middleware/errors';
-import { SignupSchema } from './schema/users';
+import authMiddleware from './middleware/auth';
+import roleCheckMiddleware, {
+  isRoleCheckRequest,
+} from './middleware/roleCheck';
+import path from 'path';
 
 const app: Express = express();
 app.use(express.json());
-//Middleware
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Middleware for authentication
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.path.startsWith(SECURE_ROOT || '')) {
+    authMiddleware(req, res, (authErr) => {
+      if (authErr) {
+        // Handle authentication error, redirect to login or respond with an error
+        res.redirect('/login.html');
+      } else if (isRoleCheckRequest(req)) {
+        roleCheckMiddleware(req, res, next);
+      } else {
+        // Handle the case where the request is not of type RoleCheckRequest
+        res.status(400).send('Bad Request');
+      }
+    });
+  } else {
+    next();
+  }
+});
+
+// API routes
 app.use('/api', rootRouter);
 
+// Prisma client setup
 export const prismaClient = new PrismaClient({
   log: ['query'],
 });
+
+// Error handling middleware
 app.use(errorMiddleware);
 
+// Start the server
 app.listen(PORT, () => {
-  console.log('Server is running on port 3000');
+  console.log(`Server is running on port ${PORT}`);
 });

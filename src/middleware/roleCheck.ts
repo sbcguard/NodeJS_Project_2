@@ -1,19 +1,24 @@
 import { NextFunction, Request, Response } from 'express';
 import { UnauthorizedException } from '../exceptions/unauthorized';
 import { ErrorCode } from '../exceptions/root';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../secrets';
 import { prismaClient } from '..';
-import { User } from '@prisma/client';
+import { User, Role } from '@prisma/client';
+import { JWT_SECRET } from '../secrets';
+import * as jwt from 'jsonwebtoken';
 
 // Define a custom type extending the Request interface
-interface AuthenticatedRequest extends Request {
-  user?: User;
-  redirectUrl?: string;
+interface RoleCheckRequest extends Request {
+  user?: User & { roles: Role[] };
+}
+export function isRoleCheckRequest(req: Request): req is RoleCheckRequest {
+  return (
+    (req as RoleCheckRequest).user !== undefined &&
+    Array.isArray((req as RoleCheckRequest).user?.roles)
+  );
 }
 
-const authMiddleware = async (
-  req: AuthenticatedRequest,
+const roleCheckMiddleware = async (
+  req: RoleCheckRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -25,20 +30,19 @@ const authMiddleware = async (
 
   // 2. if no token, throw unauthorized error
   if (!token) {
-    if (req.path !== '/login' && req.path !== '/signup') {
-      req.body.redirectUrl = req.originalUrl; // Store redirect URL in body
-      return res.redirect(`/login.html`);
-    }
-    return next();
+    return next(
+      new UnauthorizedException('Unauthorized', ErrorCode.UNAUTHORIZED)
+    );
   }
 
   try {
     // 3. if token is present, verify token and extract payload
     const payload = jwt.verify(token, JWT_SECRET) as { userId: number };
 
-    // 4. Get user from payload
+    // 4. Get user from payload, include roles in the query
     const user = await prismaClient.user.findUnique({
       where: { id: payload.userId },
+      include: { roles: true }, // include roles
     });
 
     if (!user) {
@@ -55,4 +59,4 @@ const authMiddleware = async (
   }
 };
 
-export default authMiddleware;
+export default roleCheckMiddleware;
