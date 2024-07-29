@@ -115,6 +115,6 @@ This Node.js project provides a robust authentication and authorization system u
   - `middleware/`: Middleware functions for authentication and role checking.
   - `routes/`: Express routes for authentication and other resources.
   - `schema/`: Prisma schema and Zod validation schemas.
-  - `views/`: HTML files for login and signup pages.
+- `public/`: HTML files for sample login and signup pages.
 - `.env`: Environment variables.
 - `prisma/`: Prisma configuration and migrations.
