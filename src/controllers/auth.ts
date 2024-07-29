@@ -8,6 +8,7 @@ import { ErrorCode } from '../exceptions/root';
 import { SignupSchema } from '../schema/users';
 import { NotFoundException } from '../exceptions/notFound';
 import { User } from '@prisma/client';
+import logger from '../logger/logger';
 export const signup = async (
   req: Request,
   res: Response,
@@ -48,6 +49,7 @@ export const signup = async (
     },
     include: { roles: true }, // Include roles to verify assignment
   });
+  logger.info(`Signup attempt: email=${email}, status=success`);
   res.json(user);
 };
 export const login = async (
@@ -78,6 +80,7 @@ export const login = async (
   );
   // Get the redirect URL from the request body
   const redirectUrl = req.body.redirectUrl || '/';
-
+  logger.info(`Login attempt: email=${email}, status=success`);
+  logger.info(`Redirecting: email=${email}, path=${redirectUrl}`);
   res.redirect(`${redirectUrl}?token=${token}`);
 };

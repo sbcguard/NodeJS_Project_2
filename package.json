@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx nodemon"
+    "seed": "ts-node prisma/seed.ts",
+    "start": "node dist/index.js",
+    "dev": "npx nodemon src/index.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +30,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^5.17.0",
+    "winston": "^3.13.1",
+    "winston-daily-rotate-file": "^5.0.0",
     "zod": "^3.23.8"
   }
 }

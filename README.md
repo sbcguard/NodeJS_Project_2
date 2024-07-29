@@ -8,10 +8,11 @@ This Node.js project provides a robust authentication and authorization system u
 
 - User signup and login with JWT authentication.
 - Role-based access control.
-- Error handling with custom exception classes.
-- Middleware for authentication and role checking.
-- Default role assignment on user signup.
-- Secure storage of environment variables.
+- Middleware for handling authentication and role checking.
+- Error handling with custom exceptions.
+- Logging of login and signup attempts using Winston.
+- Redirection after login based on the requested URL.
+- Seeding the database with dummy data using Prisma.
 
 ## How to Run the Project Locally
 
@@ -70,34 +71,59 @@ This Node.js project provides a robust authentication and authorization system u
 5. **Seed the database with initial data:**
 
    ```bash
-   npx prisma db seed
+   npm run seed
+   ```
+
+   or
+
+   ```bash
+   pnpm run seed
+   ```
+
+   or
+
+   ```bash
+   yarn seed
    ```
 
 6. **Start the server:**
 
    ```bash
-   npm start
+   npm run dev
    ```
 
    or
 
    ```bash
-   pnpm start
+   pnpm run dev
    ```
 
    or
 
    ```bash
-   yarn start
+   yarn dev
    ```
 
    The server will be running at `http://localhost:3000`.
+
+7. **Build the production server:**
+
+   ```bash
+   npm run build
+   ```
+
+8. **Start the production server:**
+
+   ```bash
+   npm run start
+   ```
 
 ### Usage
 
 1. **Access the login page:**
 
    Open a web browser and go to `http://localhost:3000/login.html`.
+   Or open a web browser and go to `http://localhost:3000/SECURE_ROOT/AA00_MP/M00001s.html`.
 
 2. **Signup a new user:**
 
@@ -107,14 +133,22 @@ This Node.js project provides a robust authentication and authorization system u
 
    Use the credentials created during signup to log in. The application will handle authentication and redirect you based on your role.
 
+### Logging
+
+Winston is used for logging login and signup attempts. Logs are written to files in the '/public/logs' directory:
+
+- `stdoutYYYY-MM-DD.log`: General Logs
+- `stderrYYYY-MM-DD.log`: Error Logs
+
 ### Project Structure
 
 - `src/`
   - `controllers/`: Contains the controller functions for handling signup and login.
   - `exceptions/`: Custom exception classes for error handling.
+  - `logger/`: Winston logging of application errors and access attempts.
   - `middleware/`: Middleware functions for authentication and role checking.
   - `routes/`: Express routes for authentication and other resources.
   - `schema/`: Prisma schema and Zod validation schemas.
 - `public/`: HTML files for sample login and signup pages.
 - `.env`: Environment variables.
-- `prisma/`: Prisma configuration and migrations.
+- `prisma/`: Prisma configuration, migrations, and seed script.
