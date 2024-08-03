@@ -42,14 +42,15 @@ const authMiddleware = async (
     // 4. Get user from payload
     const user = await prismaClient.user.findUnique({
       where: { id: payload.userId },
+      include: {
+        roles: true, // This will include the related roles
+      },
     });
-
     if (!user) {
       return next(
         new UnauthorizedException('Unauthorized', ErrorCode.UNAUTHORIZED)
       );
     }
-
     // 5. Attach the user to the current request object
     req.user = user;
     next(); // Continue to the next middleware or route handler

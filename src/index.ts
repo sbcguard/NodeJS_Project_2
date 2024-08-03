@@ -17,8 +17,8 @@ app.use(cookieParser());
 // Middleware for authentication
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path.startsWith(SECURE_ROOT)) {
-    authMiddleware(req, res, (authErr) => {
-      if (authErr) {
+    authMiddleware(req, res, (authenticateErr) => {
+      if (authenticateErr) {
         const fullUrl = `${req.protocol}://${req.get('host')}${
           req.originalUrl
         }`;

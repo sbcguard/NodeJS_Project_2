@@ -155,6 +155,5 @@ Winston is used for logging login and signup attempts. Logs are written to files
 
 ### TODO:
 
-- Post switch to cookie usage, need to assess implementation cross tabs.
 - Assess if localStorage is a better alternative to cookie.
 - Code cleanup/ refactoring.

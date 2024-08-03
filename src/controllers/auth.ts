@@ -57,9 +57,11 @@ export const login = async (
   next: NextFunction
 ) => {
   const { email, password } = req.body;
-
   let user = await prismaClient.user.findFirst({
     where: { email },
+    include: {
+      roles: true, // This will include the related roles
+    },
   });
   if (!user) {
     throw new NotFoundException('User not found.', ErrorCode.USER_NOT_FOUND);
@@ -93,5 +95,6 @@ export const login = async (
   logger.info(`Login attempt: email=${email}, status=success`);
   logger.info(`Redirecting: email=${email}, path=${redirectUrl}`);
   // Redirect to the original URL or home page
+  console.log(`API redirect to ${redirectUrl}`);
   res.redirect(redirectUrl);
 };

@@ -50,6 +50,7 @@ model Role {
 model AppSec {
   id Int @id @default(autoincrement())
   name String
+  url String @default("")
   type AppType
   number Int
   description String
