@@ -22,11 +22,8 @@ const roleCheckMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  // 1. Get token from header
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.startsWith('Bearer ')
-    ? authHeader.split(' ')[1]
-    : null;
+  // 1. Get token from cookies
+  const token = req.cookies.token || null;
 
   // 2. if no token, throw unauthorized error
   if (!token) {

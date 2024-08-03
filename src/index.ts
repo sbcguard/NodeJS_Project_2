@@ -1,4 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
+import cookieParser from 'cookie-parser';
 import { PORT, SECURE_ROOT } from './secrets';
 import rootRouter from './routes';
 import { PrismaClient } from '@prisma/client';
@@ -11,17 +12,24 @@ import path from 'path';
 
 const app: Express = express();
 app.use(express.json());
-
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(cookieParser());
 
 // Middleware for authentication
 app.use((req: Request, res: Response, next: NextFunction) => {
-  if (req.path.startsWith(SECURE_ROOT || '')) {
+  if (req.path.startsWith(SECURE_ROOT)) {
     authMiddleware(req, res, (authErr) => {
       if (authErr) {
-        // Handle authentication error, redirect to login or respond with an error
-        res.redirect('/login.html');
+        const fullUrl = `${req.protocol}://${req.get('host')}${
+          req.originalUrl
+        }`;
+        res.cookie('redirectUrl', fullUrl, {
+          httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+          secure: true, // Use `secure` flag in production
+          maxAge: 12 * 60 * 60 * 1000, // 12 hours in milliseconds
+          sameSite: 'strict', // Controls cookie sending in cross-site requests
+          path: '/', // Ensure the cookie is sent with requests to all paths
+        });
+        res.redirect(`/login.html`);
       } else if (isRoleCheckRequest(req)) {
         roleCheckMiddleware(req, res, next);
       } else {
@@ -34,6 +42,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
 // API routes
 app.use('/api', rootRouter);
 

@@ -152,3 +152,9 @@ Winston is used for logging login and signup attempts. Logs are written to files
 - `public/`: HTML files for sample login and signup pages.
 - `.env`: Environment variables.
 - `prisma/`: Prisma configuration, migrations, and seed script.
+
+### TODO:
+
+- Post switch to cookie usage, need to assess implementation cross tabs.
+- Assess if localStorage is a better alternative to cookie.
+- Code cleanup/ refactoring.

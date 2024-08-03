@@ -7,7 +7,6 @@ import { BadRequestsException } from '../exceptions/bad-request';
 import { ErrorCode } from '../exceptions/root';
 import { SignupSchema } from '../schema/users';
 import { NotFoundException } from '../exceptions/notFound';
-import { User } from '@prisma/client';
 import logger from '../logger/logger';
 export const signup = async (
   req: Request,
@@ -78,9 +77,21 @@ export const login = async (
     JWT_SECRET,
     { expiresIn: JWT_SECRET_EXPIRATION }
   );
-  // Get the redirect URL from the request body
-  const redirectUrl = req.body.redirectUrl || '/';
+  // Set the token in the response (e.g., as a cookie)
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 12 * 60 * 60 * 1000, // 12 hours
+  });
+  // Retrieve the redirect URL from the cookie
+  const redirectUrl = req.cookies.redirectUrl || '/'; // Default to home page if not found
+  // Clear the redirect URL from the cookie
+  res.cookie('redirectUrl', '', { expires: new Date(0) });
+  //Log the action
   logger.info(`Login attempt: email=${email}, status=success`);
   logger.info(`Redirecting: email=${email}, path=${redirectUrl}`);
-  res.redirect(`${redirectUrl}?token=${token}`);
+  // Redirect to the original URL or home page
+  res.redirect(redirectUrl);
 };

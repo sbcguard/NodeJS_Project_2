@@ -1,15 +1,27 @@
 import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import path from 'path';
-
 const logDir = 'public/logs';
-
+// Custom timestamp format function
+const timezoned = () => {
+  return new Date().toLocaleString('en-US', {
+    timeZone: 'America/Chicago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    fractionalSecondDigits: 3,
+    hour12: false, // 24-hour time format
+  });
+};
 const logger = createLogger({
   level: 'info',
   format: format.combine(
-    format.timestamp(),
+    format.timestamp({ format: timezoned }),
     format.printf(({ timestamp, level, message }) => {
-      return `${timestamp} [${level}]: ${message}`;
+      return `${timestamp} [${level.toUpperCase()}]: ${message}`;
     })
   ),
   transports: [
@@ -19,7 +31,7 @@ const logger = createLogger({
       level: 'info',
       format: format.combine(
         format.printf(({ timestamp, level, message }) => {
-          return `${timestamp} [${level}]: ${message}`;
+          return `${timestamp} [${level.toUpperCase()}]: ${message}`;
         })
       ),
     }),
@@ -29,7 +41,7 @@ const logger = createLogger({
       level: 'error',
       format: format.combine(
         format.printf(({ timestamp, level, message }) => {
-          return `${timestamp} [${level}]: ${message}`;
+          return `${timestamp} [${level.toUpperCase()}]: ${message}`;
         })
       ),
     }),
@@ -42,7 +54,7 @@ logger.add(
     format: format.combine(
       format.colorize(),
       format.printf(({ timestamp, level, message }) => {
-        return `${timestamp} [${level}]: ${message}`;
+        return `${timestamp} [${level.toUpperCase()}]: ${message}`;
       })
     ),
   })
