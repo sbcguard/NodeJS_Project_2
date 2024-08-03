@@ -28,7 +28,7 @@ This Node.js project provides a robust authentication and authorization system u
 
    ```bash
    git clone https://github.com/sbcguard/NodeJS_Project_2.git
-   cd nodejs-auth-project
+   cd nodejs_project_2
    ```
 
 2. **Install dependencies:**
