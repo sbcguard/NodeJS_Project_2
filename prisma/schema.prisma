@@ -27,7 +27,7 @@ enum AppType {
 
 model User {
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   email String @unique
   password String
   createdAt DateTime @default(now())
@@ -51,6 +51,7 @@ model AppSec {
   id Int @id @default(autoincrement())
   name String
   url String @default("")
+  directory String @default("")
   type AppType
   number Int
   description String

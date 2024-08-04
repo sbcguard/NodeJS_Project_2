@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { UnauthorizedException } from '../exceptions/unauthorized';
 import { ErrorCode } from '../exceptions/root';
-import { prismaClient } from '..';
-import { User, Role, AppSec } from '@prisma/client';
-import { JWT_SECRET } from '../secrets';
-import * as jwt from 'jsonwebtoken';
+import { setRedirectUrlCookie } from '@/utils/setCookie';
+import { User, Role } from '@prisma/client';
+import { validateToken } from '@/utils/jwt';
+import { checkAppSecByUrl, findUser } from '@/utils/prisma';
 
 // Define a custom type extending the Request interface
 interface RoleCheckRequest extends Request {
@@ -27,26 +27,19 @@ const roleCheckMiddleware = async (
 
   // 2. if no token, throw redirect to login to obtain token
   if (!token) {
-    const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-    res.cookie('redirectUrl', fullUrl, {
-      httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-      secure: true, // Use `secure` flag in production
-      maxAge: 12 * 60 * 60 * 1000, // 12 hours in milliseconds
-      sameSite: 'strict', // Controls cookie sending in cross-site requests
-      path: '/', // Ensure the cookie is sent with requests to all paths
-    });
+    setRedirectUrlCookie(
+      res,
+      `${req.protocol}://${req.get('host')}${req.originalUrl}`
+    );
     return res.redirect('/unauthorized.html');
   }
 
   try {
     // 3. if token is present, verify token and extract payload
-    const payload = jwt.verify(token, JWT_SECRET) as { userId: number };
+    const payload = validateToken(token);
 
     // 4. Get user from payload, include roles in the query
-    const user = await prismaClient.user.findUnique({
-      where: { id: payload.userId },
-      include: { roles: true }, // include roles
-    });
+    const user = await findUser({ id: payload.userId });
 
     if (!user) {
       return next(
@@ -54,10 +47,7 @@ const roleCheckMiddleware = async (
       );
     }
     // 5. Get the appSec based on the request URL
-    const appSec = await prismaClient.appSec.findFirst({
-      where: { url: req.path },
-      include: { roles: true }, // include roles for the app
-    });
+    const appSec = await checkAppSecByUrl(req.path);
     if (!appSec) {
       return res.redirect('/unauthorized.html');
     }

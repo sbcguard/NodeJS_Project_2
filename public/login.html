@@ -65,6 +65,7 @@
     <div class="login-container">
       <h1>Login</h1>
       <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required />
         <input type="email" id="email" placeholder="Email" required />
         <input type="password" id="password" placeholder="Password" required />
         <button type="submit">Login</button>
@@ -89,6 +90,7 @@
         .addEventListener('submit', async (event) => {
           event.preventDefault();
 
+          const name = document.getElementById('username').value;
           const email = document.getElementById('email').value;
           const password = document.getElementById('password').value;
 
@@ -98,7 +100,7 @@
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ email, password }),
+              body: JSON.stringify({ email, name, password }),
             });
 
             if (!response.ok) {

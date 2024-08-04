@@ -9,6 +9,7 @@ import roleCheckMiddleware, {
   isRoleCheckRequest,
 } from './middleware/roleCheck';
 import path from 'path';
+import { setRedirectUrlCookie } from './utils/setCookie';
 
 const app: Express = express();
 app.use(express.json());
@@ -19,16 +20,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.path.startsWith(SECURE_ROOT)) {
     authMiddleware(req, res, (authenticateErr) => {
       if (authenticateErr) {
-        const fullUrl = `${req.protocol}://${req.get('host')}${
-          req.originalUrl
-        }`;
-        res.cookie('redirectUrl', fullUrl, {
-          httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-          secure: true, // Use `secure` flag in production
-          maxAge: 12 * 60 * 60 * 1000, // 12 hours in milliseconds
-          sameSite: 'strict', // Controls cookie sending in cross-site requests
-          path: '/', // Ensure the cookie is sent with requests to all paths
-        });
+        setRedirectUrlCookie(
+          res,
+          `${req.protocol}://${req.get('host')}${req.originalUrl}`
+        );
         res.redirect(`/login.html`);
       } else if (isRoleCheckRequest(req)) {
         roleCheckMiddleware(req, res, next);

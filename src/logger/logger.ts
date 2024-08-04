@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import path from 'path';
 const logDir = 'public/logs';
-// Custom timestamp format function
+// Timestamp format function
 const timezoned = () => {
   return new Date().toLocaleString('en-US', {
     timeZone: 'America/Chicago',
@@ -16,47 +16,33 @@ const timezoned = () => {
     hour12: false, // 24-hour time format
   });
 };
+// Log format
+const logFormat = format.printf(({ timestamp, level, message }) => {
+  return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+});
+// Function to create a DailyRotateFile transport
+const createDailyRotateFileTransport = (subdir: string, level: string) => {
+  return new DailyRotateFile({
+    filename: path.join(`${logDir}/${subdir}`, '%DATE%.log'),
+    datePattern: 'YYYY-MM-DD',
+    level: level,
+    format: format.combine(logFormat),
+  });
+};
+// Create the logger
 const logger = createLogger({
   level: 'info',
-  format: format.combine(
-    format.timestamp({ format: timezoned }),
-    format.printf(({ timestamp, level, message }) => {
-      return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-    })
-  ),
+  format: format.combine(format.timestamp({ format: timezoned }), logFormat),
   transports: [
-    new DailyRotateFile({
-      filename: path.join(logDir, 'stdout-%DATE%.log'),
-      datePattern: 'YYYY-MM-DD',
-      level: 'info',
-      format: format.combine(
-        format.printf(({ timestamp, level, message }) => {
-          return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-        })
-      ),
-    }),
-    new DailyRotateFile({
-      filename: path.join(logDir, 'stderr-%DATE%.log'),
-      datePattern: 'YYYY-MM-DD',
-      level: 'error',
-      format: format.combine(
-        format.printf(({ timestamp, level, message }) => {
-          return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-        })
-      ),
-    }),
+    createDailyRotateFileTransport('stdout', 'info'),
+    createDailyRotateFileTransport('stderr', 'error'),
   ],
 });
 
 // Add console transport to log to the console as well
 logger.add(
   new transports.Console({
-    format: format.combine(
-      format.colorize(),
-      format.printf(({ timestamp, level, message }) => {
-        return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-      })
-    ),
+    format: format.combine(format.colorize(), logFormat),
   })
 );
 
