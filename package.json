@@ -1,7 +1,7 @@
 {
   "name": "nodejs_project_2",
   "version": "1.0.0",
-  "description": "Sample NodeJS with TypeScript Project",
+  "description": "NodeJS Table Driven Secure Routing",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -2,15 +2,16 @@
 
 ## About
 
-This Node.js project provides a robust authentication and authorization system using JWT (JSON Web Tokens). The project is designed to handle user signup, login, and role-based access control, ensuring that users have the appropriate permissions to access certain resources. The backend is built with Express.js and Prisma ORM for database interactions.
+This Node.js project provides a robust authentication and authorization system using JWT (JSON Web Tokens). The project is designed to handle user sign-up, login, and role-based access control, ensuring that users have the appropriate permissions to access certain resources. The backend is built with Express.js and Prisma ORM for database interactions.
 
 ### Features
 
-- User signup and login with JWT authentication.
-- Role-based access control.
+- User sign-up and login to obtain JWT authentication.
+- Role-based access control to routes.
+- Cross-domain support
 - Middleware for handling authentication and role checking.
 - Error handling with custom exceptions.
-- Logging of login and signup attempts using Winston.
+- Logging of login and sign-up attempts using Winston.
 - Redirection after login based on the requested URL.
 - Seeding the database with dummy data using Prisma.
 
@@ -20,7 +21,7 @@ This Node.js project provides a robust authentication and authorization system u
 
 - Node.js (v20 or higher)
 - npm or pnpm or yarn
-- MySQL (or any supported Prisma database)
+- MySQL (or any supported Prisma database, Serialized for DB2/IBMi)
 
 ### Installation
 
@@ -54,8 +55,11 @@ This Node.js project provides a robust authentication and authorization system u
    Create a `.env` file in the root directory and add the following:
 
    ```plaintext
-   DATABASE_URL=mysql://username:password@localhost:5432/database_name
+   DATABASE_URL="mysql://root:MYPASSWORD@localhost:3306/myschema?schema=myschema"
+   PORT=3000
    JWT_SECRET=your_jwt_secret
+   JWT_SECRET_EXPIRATION=12h
+   SECURE_ROOT=['/path/to/protected/','/path/to/protected2/']
    ```
 
 4. **Set up the database:**
@@ -125,17 +129,17 @@ This Node.js project provides a robust authentication and authorization system u
    Open a web browser and go to `http://localhost:3000/login.html`.
    Or open a web browser and go to `http://localhost:3000/SECURE_ROOT/AA00_MP/M00001s.html`.
 
-2. **Signup a new user:**
+2. **Sign-up a new user:**
 
-   Click on the link to the signup page and create a new account.
+   Click on the link to the sign-up page and create a new account.
 
 3. **Login:**
 
-   Use the credentials created during signup to log in. The application will handle authentication and redirect you based on your role.
+   Use the credentials created during sign-up to log in. The application will handle authentication and redirect you based on your role.
 
 ### Logging
 
-Winston is used for logging login and signup attempts. Logs are written to files in the '/public/logs' directory:
+Winston is used for logging login and sign-up attempts. Logs are written to files in the '/public/logs' directory:
 
 - `stdout/YYYY-MM-DD.log`: General Logs
 - `stderr/YYYY-MM-DD.log`: Error Logs
@@ -143,14 +147,14 @@ Winston is used for logging login and signup attempts. Logs are written to files
 ### Project Structure
 
 - `src/`
-  - `controllers/`: Contains the controller functions for handling signup and login.
+  - `controllers/`: Contains the controller functions for handling sign-up and login.
   - `exceptions/`: Custom exception classes for error handling.
   - `logger/`: Winston logging of application errors and access attempts.
   - `middleware/`: Middleware functions for authentication and role checking.
   - `routes/`: Express routes for authentication and other resources.
   - `schema/`: Prisma schema and Zod validation schemas.
   - `utils/`: Reusable code segments.
-- `public/`: HTML files for sample login and signup pages.
+- `public/`: HTML files for sample login and sign-up pages.
 - `.env`: Environment variables.
 - `prisma/`: Prisma configuration, migrations, and seed script.
 
