@@ -137,8 +137,8 @@ This Node.js project provides a robust authentication and authorization system u
 
 Winston is used for logging login and signup attempts. Logs are written to files in the '/public/logs' directory:
 
-- `stdoutYYYY-MM-DD.log`: General Logs
-- `stderrYYYY-MM-DD.log`: Error Logs
+- `stdout/YYYY-MM-DD.log`: General Logs
+- `stderr/YYYY-MM-DD.log`: Error Logs
 
 ### Project Structure
 
@@ -149,6 +149,7 @@ Winston is used for logging login and signup attempts. Logs are written to files
   - `middleware/`: Middleware functions for authentication and role checking.
   - `routes/`: Express routes for authentication and other resources.
   - `schema/`: Prisma schema and Zod validation schemas.
+  - `utils/`: Reusable code segments.
 - `public/`: HTML files for sample login and signup pages.
 - `.env`: Environment variables.
 - `prisma/`: Prisma configuration, migrations, and seed script.
