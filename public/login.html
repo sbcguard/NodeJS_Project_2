@@ -15,6 +15,7 @@
         background-color: #f4f4f4;
       }
       .login-container {
+        min-width: 25vw;
         background-color: #fff;
         padding: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -23,7 +24,14 @@
       h1 {
         margin-bottom: 20px;
       }
+      form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
       input[type='email'],
+      input[type='text'],
       input[type='password'] {
         width: 100%;
         padding: 10px;
@@ -65,8 +73,9 @@
     <div class="login-container">
       <h1>Login</h1>
       <form id="loginForm">
-        <input type="text" id="username" placeholder="Username" required />
-        <input type="email" id="email" placeholder="Email" required />
+        <input type="text" id="username" placeholder="Username" />
+        <span>OR</span>
+        <input type="email" id="email" placeholder="Email" />
         <input type="password" id="password" placeholder="Password" required />
         <button type="submit">Login</button>
         <div class="error" id="error"></div>
@@ -84,7 +93,27 @@
           document.getElementById('error').innerHTML =
             'Not authorized to requested application.';
         }
+        const usernameFld = document.getElementById('username');
+        const emailFld = document.getElementById('email');
+
+        const toggleRequired = () => {
+          if (usernameFld.value) {
+            emailFld.removeAttribute('required');
+            usernameFld.setAttribute('required', 'required');
+          } else if (emailFld.value) {
+            usernameFld.removeAttribute('required');
+            emailFld.setAttribute('required', 'required');
+          } else {
+            usernameFld.setAttribute('required', 'required');
+            emailFld.setAttribute('required', 'required');
+          }
+        };
+
+        usernameFld.addEventListener('input', toggleRequired);
+        emailFld.addEventListener('input', toggleRequired);
+        toggleRequired();
       });
+
       document
         .getElementById('loginForm')
         .addEventListener('submit', async (event) => {
@@ -93,7 +122,6 @@
           const name = document.getElementById('username').value;
           const email = document.getElementById('email').value;
           const password = document.getElementById('password').value;
-
           try {
             const response = await fetch('/api/auth/login', {
               method: 'POST',
@@ -107,8 +135,11 @@
               throw new Error('Login failed');
             }
 
-            const data = await response.json();
-            alert('Login successful! JWT Token: ' + data.token);
+            const result = await response.json();
+            const { redirectUrl } = result;
+            if (redirectUrl) {
+              window.location = redirectUrl;
+            }
           } catch (error) {
             document.getElementById('error').textContent = error.message;
           }

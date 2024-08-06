@@ -2,12 +2,17 @@ import { NextFunction, Request, Response } from 'express';
 import { compareSync } from 'bcrypt';
 import { BadRequestsException } from '../exceptions/bad-request';
 import { ErrorCode } from '../exceptions/root';
-import { setTokenCookie } from '@/utils/setCookie';
 import { SignupSchema } from '../schema/users';
 import { NotFoundException } from '../exceptions/notFound';
 import logger from '../logger/logger';
-import { generateToken } from '@/utils/jwt';
-import { findRole, createRole, createUser, findUser } from '@/utils/prisma';
+import {
+  generateToken,
+  findRole,
+  createRole,
+  createUser,
+  findUser,
+  setTokenCookie,
+} from '../utils';
 export const signup = async (
   req: Request,
   res: Response,
@@ -89,7 +94,6 @@ export const login = async (
   //Log the action
   logger.info(`Login attempt: email=${email}, status=success`);
   logger.info(`Redirecting: email=${email}, path=${redirectUrl}`);
-
   // Redirect to the original URL or home page
-  res.redirect(redirectUrl);
+  res.json({ redirectUrl: redirectUrl });
 };

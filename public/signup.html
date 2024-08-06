@@ -15,6 +15,7 @@
         background-color: #f4f4f4;
       }
       .signup-container {
+        min-width: 25vw;
         background-color: #fff;
         padding: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -22,6 +23,12 @@
       }
       h1 {
         margin-bottom: 20px;
+      }
+      form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       input[type='text'],
       input[type='email'],
@@ -66,14 +73,14 @@
     <div class="signup-container">
       <h1>Sign Up</h1>
       <form id="signupForm">
-        <input type="text" id="name" placeholder="Name" required />
+        <input type="text" id="username" placeholder="Username" required />
         <input type="email" id="email" placeholder="Email" required />
         <input type="password" id="password" placeholder="Password" required />
         <button type="submit">Sign Up</button>
         <div class="error" id="error"></div>
       </form>
       <div class="link">
-        <a href="/login">Already have an account? Log in here.</a>
+        <a href="/login.html">Already have an account? Log in here.</a>
       </div>
     </div>
 
@@ -83,7 +90,7 @@
         .addEventListener('submit', async function (event) {
           event.preventDefault();
 
-          const name = document.getElementById('name').value;
+          const name = document.getElementById('username').value;
           const email = document.getElementById('email').value;
           const password = document.getElementById('password').value;
 

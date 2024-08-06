@@ -6,17 +6,18 @@ import rootRouter from './routes';
 import { PrismaClient } from '@prisma/client';
 import { errorMiddleware } from './middleware/errors';
 import secureMiddleware from './middleware/secure';
+import { errorHandler } from './error-handler';
 
 const app: Express = express();
 app.use(express.json());
 
 app.use(cookieParser());
 
+// Apply secure middleware, with error handler wrapper
+app.use(errorHandler(secureMiddleware));
+
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, '../public')));
-
-// Apply secure middleware
-app.use(secureMiddleware);
 
 // API routes
 app.use('/api', rootRouter);

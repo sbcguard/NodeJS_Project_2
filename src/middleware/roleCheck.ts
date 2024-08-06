@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { UnauthorizedException } from '../exceptions/unauthorized';
 import { ErrorCode } from '../exceptions/root';
-import { setRedirectUrlCookie } from '@/utils/setCookie';
 import { User, Role } from '@prisma/client';
-import { validateToken } from '@/utils/jwt';
-import { checkAppSecByUrl, findUser } from '@/utils/prisma';
+import {
+  setRedirectUrlCookie,
+  checkAppSecByUrl,
+  findUser,
+  validateToken,
+} from '../utils';
 
 // Define a custom type extending the Request interface
 interface RoleCheckRequest extends Request {

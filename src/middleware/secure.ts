@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { SECURE_ROOT } from '@/secrets';
-import authMiddleware from '@/middleware/auth';
+import { SECURE_ROOT } from '../secrets';
+import authMiddleware from '../middleware/auth';
 import roleCheckMiddleware, {
   isRoleCheckRequest,
-} from '@/middleware/roleCheck';
-import { setRedirectUrlCookie } from '@/utils/setCookie';
+} from '../middleware/roleCheck';
+import { setRedirectUrlCookie } from '../utils';
 
 // Middleware function to handle authentication and role checking
 const secureMiddleware = (req: Request, res: Response, next: NextFunction) => {

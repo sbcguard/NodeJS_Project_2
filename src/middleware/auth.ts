@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { UnauthorizedException } from '../exceptions/unauthorized';
 import { ErrorCode } from '../exceptions/root';
-import { setRedirectUrlCookie } from '@/utils/setCookie';
-import { validateToken } from '@/utils/jwt';
 import { User } from '@prisma/client';
-import { findUser } from '@/utils/prisma';
+import { setRedirectUrlCookie, validateToken, findUser } from '../utils';
 
 // Define a custom type extending the Request interface
 interface AuthenticatedRequest extends Request {
