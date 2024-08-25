@@ -22,6 +22,7 @@ enum AppType {
   I // Retrieval App
   M // Maintainer App
   R // Report App
+  P // Web Page
   O // Other App
 }
 
@@ -33,7 +34,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   roles Role[] @relation("UserRoles")
-  @@map("users")
+  @@map("User")
 }
 
 model Role {
@@ -44,7 +45,7 @@ model Role {
   apps AppSec[] @relation("RoleApps")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@map("roles")
+  @@map("Role")
 }
 
 model AppSec {
@@ -58,5 +59,5 @@ model AppSec {
   roles Role[] @relation("RoleApps")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@map("appsec")
+  @@map("AppSec")
 }

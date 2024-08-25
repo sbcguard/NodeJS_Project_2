@@ -3,10 +3,10 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { PORT } from './secrets';
 import rootRouter from './routes';
-import { PrismaClient } from '@prisma/client';
 import { errorMiddleware } from './middleware/errors';
 import secureMiddleware from './middleware/secure';
 import { errorHandler } from './error-handler';
+import logger from './logger/logger';
 
 const app: Express = express();
 app.use(express.json());
@@ -22,15 +22,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 // API routes
 app.use('/api', rootRouter);
 
-// Prisma client setup
-export const prismaClient = new PrismaClient({
-  log: ['query'],
-});
-
 // Error handling middleware
 app.use(errorMiddleware);
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on port ${PORT}`);
 });

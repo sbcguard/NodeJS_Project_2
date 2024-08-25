@@ -1,4 +1,4 @@
-import { prismaClient } from '..';
+import { prismaClient } from '../prisma/client';
 import { UserSearchParams } from '@/@types/express/types';
 import { hashSync } from 'bcrypt';
 const buildWhereClause = (search: UserSearchParams) => {
